@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lemari_lama/menu.dart';
+import 'package:lemari_lama/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());
