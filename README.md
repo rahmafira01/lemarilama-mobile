@@ -217,5 +217,8 @@ if (item.name == "Tambah Product") {
   },
 ```
 
-
+# Tugas 9: Integrasi Layanan Web Django dengan Aplikasi Flutter
+##  Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+Membuat model untuk pengambilan/pengiriman data JSON penting untuk validasi, standarisasi struktur data, mencegah error logika, meningkatkan keamanan, dan mempermudah maintenance. Tanpa model, error tidak selalu terjadi, tetapi risiko inkonsistensi dan bug meningkat jika data JSON tidak sesuai format yang diharapkan. Model memastikan aplikasi lebih stabil dan terkelola dengan baik.  
+## Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
 

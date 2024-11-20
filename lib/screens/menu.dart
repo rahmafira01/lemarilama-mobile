@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lemari_lama/widgets/left_drawer.dart';
-import 'package:lemari_lama/widgets/product_card.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306245794'; // NPM

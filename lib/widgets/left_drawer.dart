@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lemari_lama/screens/menu.dart';
 import 'package:lemari_lama/screens/productentry_form.dart';
-
+import 'package:lemari_lama/screens/list_productentry.dart';
 
 
 class LeftDrawer extends StatelessWidget {
@@ -29,7 +29,7 @@ class LeftDrawer extends StatelessWidget {
                 ),
                 Padding(padding: EdgeInsets.all(8)),
                 Text(
-                  "Ayo tambah produkmu!",
+                  "Ayo tambah produk kamu disini!",
                   // TODO: Tambahkan gaya teks dengan center alignment, font ukuran 15, warna putih, dan weight biasa
                 ),
               ],
@@ -48,17 +48,29 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_bag),
-            title: const Text('Tambah Product'),
-            // Bagian redirection ke ProductEntryFormPage
+            leading: const Icon(Icons.mood),
+            title: const Text('Tambah Produk'),
+            // Bagian redirection ke MoodEntryFormPage
             onTap: () {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProductEntryFormPage(),
+                    builder: (context) => const ProductEntryFormPage(),
                   ));
 
             },
+          ),
+          // Kode ListTile Menu
+          ListTile(
+              leading: const Icon(Icons.add_reaction_rounded),
+              title: const Text('Lihat Daftar Produk'),
+              onTap: () {
+                  // Route menu ke halaman mood
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProductEntryPage()),
+                  );
+              },
           ),
         ],
       ),

@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:lemari_lama/screens/menu.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+// TODO: Impor drawer yang sudah dibuat sebelumnya
 
 class ProductEntryFormPage extends StatefulWidget {
   const ProductEntryFormPage({super.key});
@@ -10,56 +16,24 @@ class ProductEntryFormPage extends StatefulWidget {
 class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = "";
-  int _price = 0;
-  String _description = "";
+	String _description = "";
+	int _price = 0;
 
   @override
   Widget build(BuildContext context) {
+        final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(
           child: Text(
-            'Form Tambah Product',
+            'Form Tambah Produk',
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Halaman Utama'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/'); // Replace '/' with your main page route
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Tambah Product'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/add'); // Replace '/add' with this page route
-              },
-            ),
-          ],
-        ),
-      ),
+      // TODO: Tambahkan drawer yang sudah dibuat di sini
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -83,16 +57,16 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Product name tidak boleh kosong!";
+                      return "Product Name tidak boleh kosong!";
                     }
                     return null;
                   },
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Price",
                     labelText: "Price",
@@ -109,19 +83,20 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     if (value == null || value.isEmpty) {
                       return "Price tidak boleh kosong!";
                     }
-                    int? intValue = int.tryParse(value);
-                    if (intValue == null || intValue < 0) {
-                      return "Harga harus berupa angka positif!";
+                    if (int.tryParse(value) == null) {
+                      return "Price harus berupa angka!";
                     }
                     return null;
                   },
                 ),
               ),
+
+
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Product Description",
+                    hintText: "Description",
                     labelText: "Description",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
@@ -140,46 +115,49 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   },
                 ),
               ),
+  
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(
                           Theme.of(context).colorScheme.primary),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Product berhasil tersimpan'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Name: $_name'),
-                                    Text('Price: $_price'),
-                                    Text('Description: $_description'),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _formKey.currentState!.reset();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
+                onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                        // Kirim ke Django dan tunggu respons
+                        // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
+                        final response = await request.postJson(
+                            "http://127.0.0.1:8000/create-flutter/",
+                            jsonEncode(<String, String>{
+                                'name': _name,
+                                'price': _price.toString(),
+                                'description': _description,
+                            // TODO: Sesuaikan field data sesuai dengan aplikasimu
+                            }),
                         );
-                      }
-                    },
+                        if (context.mounted) {
+                            if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                content: Text("Produk baru berhasil disimpan!"),
+                                ));
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                                );
+                            } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                    content:
+                                        Text("Terdapat kesalahan, silakan coba lagi."),
+                                ));
+                            }
+                        }
+                    }
+                },
                     child: const Text(
                       "Save",
                       style: TextStyle(color: Colors.white),
@@ -187,8 +165,12 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   ),
                 ),
               ),
+
             ],
           ),
+          
+
+
         ),
       ),
     );
